@@ -86,6 +86,10 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - name: Terraform init (dev)
         run: terraform -chdir=${{ env.TF_DIR }} init -backend-config=envs/dev/backend-dev.hcl
+      - name: Zip lambda code
+        run: |
+          cd app
+          zip -r app.zip lambda_function.py
       - name: Terraform plan (dev)
         run: |
           terraform -chdir=${{ env.TF_DIR }} plan \
@@ -120,6 +124,10 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - name: Terraform init (staging)
         run: terraform -chdir=${{ env.TF_DIR }} init -backend-config=envs/staging/backend-staging.hcl
+      - name: Zip lambda code
+        run: |
+          cd app
+          zip -r app.zip lambda_function.py
       - name: Terraform plan (staging)
         run: |
           terraform -chdir=${{ env.TF_DIR }} plan \
