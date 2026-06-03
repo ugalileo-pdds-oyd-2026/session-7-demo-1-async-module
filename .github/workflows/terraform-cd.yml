@@ -1,0 +1,63 @@
+name: Terraform CD
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'infra/**'
+  push:
+    branches: [main]
+    paths:
+      - 'infra/**'
+
+env:
+  TF_VERSION: "1.6.0"
+  AWS_REGION: "us-west-2"
+  TF_DIR: "./infra"
+
+jobs:
+  plan:
+    name: Plan (dev)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Terraform init (dev)
+        run: terraform -chdir=${{ env.TF_DIR }} init -backend-config=envs/dev/backend-dev.hcl
+      - name: Terraform plan (dev)
+        id: plan
+        run: |
+          terraform -chdir=${{ env.TF_DIR }} plan \
+            -var-file=envs/dev/dev.tfvars \
+            -out=tfplan \
+            -no-color 2>&1 | tee plan_output.txt
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-dev-${{ github.run_id }}
+          path: ${{ env.TF_DIR }}/tfplan
+      - name: Post plan as PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const planOutput = fs.readFileSync('plan_output.txt', 'utf8');
+            const body = `## Terraform Plan (dev)\n\`\`\`\n${planOutput.slice(0, 60000)}\n\`\`\``;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
