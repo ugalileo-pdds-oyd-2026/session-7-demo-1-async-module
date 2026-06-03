@@ -24,10 +24,10 @@ module "async" {
   lambda_function_name       = module.compute_lambda.function_name
   lambda_execution_role_name = module.compute_lambda.execution_role_name
 
-  dlq_message_retention_seconds  = var.dlq_message_retention_seconds
-  max_receive_count               = var.max_receive_count
-  visibility_timeout_seconds      = var.visibility_timeout_seconds
-  batch_size          = var.batch_size
-  schedule_expression = var.schedule_expression
-  scheduler_timezone              = var.scheduler_timezone
+  dlq_message_retention_seconds = var.dlq_message_retention_seconds
+  max_receive_count             = var.max_receive_count
+  visibility_timeout_seconds    = var.visibility_timeout_seconds
+  batch_size                    = var.batch_size
+  schedule_expression           = var.schedule_expression
+  scheduler_timezone            = var.scheduler_timezone
 }
