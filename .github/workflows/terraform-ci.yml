@@ -31,6 +31,11 @@ jobs:
       - name: Terraform init (no backend)
         run: terraform -chdir=${{ env.TF_DIR }} init -backend=false
 
+      - name: Zip lambda code
+        run: |
+          cd app
+          zip -r app.zip lambda_function.py
+
       - name: Terraform validate
         run: terraform -chdir=${{ env.TF_DIR }} validate
 
