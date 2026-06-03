@@ -12,6 +12,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# TFplan artifact
+infra/tfplan
+
 # App
 /app/server
 /app/*.zip
