@@ -16,6 +16,17 @@ env:
   TF_DIR: "./infra"
 
 jobs:
+  zip:
+    name: Zip Python Lambda code
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Zip Lambda code
+        run: |
+          cd app
+          zip -r ../app.zip lambda_function.py
   plan:
     name: Plan (dev)
     runs-on: ubuntu-latest
