@@ -37,3 +37,15 @@ variable "batch_size" {
   type        = number
   default     = 10
 }
+
+variable "schedule_expression" {
+  description = "EventBridge Scheduler expression (rate or cron)"
+  type        = string
+  default     = "rate(5 minutes)"
+}
+
+variable "scheduler_timezone" {
+  description = "IANA timezone for the schedule"
+  type        = string
+  default     = "America/Guatemala"
+}
